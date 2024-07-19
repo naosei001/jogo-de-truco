@@ -1,0 +1,101 @@
+import random
+
+
+valores = {
+    '4': 1, '5': 2, '6': 3, '7': 4, 'Q': 5, 'J': 6, 'K': 7, 'A': 8, '2': 9, '3': 10
+}
+
+#Cartas mais fortes
+manilhas = {
+    ('Paus', '4'): 11,
+    ('Copas', '7'): 10,
+    ('Espadas', 'A'): 9,
+    ('Ouros', '7'): 8
+}
+
+#Embaralhar
+def preparar_baralho():
+    naipes = ['Ouros', 'Paus', 'Copas', 'Espadas']
+    baralho = []
+    for naipe in naipes:
+        for face in valores.keys():
+            baralho.append((naipe, face))
+    random.shuffle(baralho)
+    return baralho
+
+#distribuição de cartas para computador e jogador
+def distribuir_cartas(baralho):
+    jogador = baralho[:3]
+    maquina = baralho[3:6]
+    return jogador, maquina
+
+#Função para calcular o valor da carta
+def valor_carta(carta):
+    naipe, face = carta
+    return manilhas.get((naipe, face), valores[face])
+
+#Função para mostrar as cartas do jogador e pedir a escolha
+def escolher_carta(cartas):
+    print("\nAqui estão suas cartas:")
+    for i, carta in enumerate(cartas):
+        print(f"{i}: {carta}")
+    
+    while True:
+        escolha = input("Escolha uma carta para jogar (0, 1 ou 2): ")
+        if escolha in ['0', '1', '2']:
+            escolha = int(escolha)
+            return cartas[escolha]
+        else:
+            print("Número inválido. Tente novamente.")
+
+#Função do jogo
+def jogo_truco():
+    print("Bem-vindo ao Truco!")
+    
+    baralho = preparar_baralho()
+    jogador, maquina = distribuir_cartas(baralho)
+
+    vitorias_jogador = 0
+    vitorias_maquina = 0
+
+    for rodada in range(3):
+        print(f"\nRodada {rodada + 1}:")
+        
+        #O jogador escolhe uma carta
+        carta_jogador = escolher_carta(jogador)
+        jogador.remove(carta_jogador)
+        
+        #A computador escolhe uma carta aleatória
+        carta_maquina = random.choice(maquina)
+        maquina.remove(carta_maquina)
+        
+        print(f"Sua carta: {carta_jogador}")
+        print(f"Carta da máquina: {carta_maquina}")
+
+        #Determinando o vencedor da rodada
+        valor_jogador = valor_carta(carta_jogador)
+        valor_maquina = valor_carta(carta_maquina)
+
+        if valor_jogador > valor_maquina:
+            vitorias_jogador += 1
+            print("Você ganhou esta rodada!")
+        elif valor_maquina > valor_jogador:
+            vitorias_maquina += 1
+            print("A máquina ganhou esta rodada!")
+        else:
+            print("Essa rodada foi um empate.")
+    
+    #Mostrando o resultado final do jogo
+    print(f"\nVitórias do Jogador: {vitorias_jogador}")
+    print(f"Vitórias da Máquina: {vitorias_maquina}")
+
+    if vitorias_jogador > vitorias_maquina:
+        print("Você venceu o jogo!")
+    elif vitorias_maquina > vitorias_jogador:
+        print("A máquina venceu o jogo!")
+    else:
+        print("O jogo terminou empatado!")
+
+#Rodando o jogo
+if _name_ == "_main_":
+    jogo_truco()
